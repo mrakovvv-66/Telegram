@@ -1,0 +1,37 @@
+name: MrakGram Android Build
+
+on:
+workflow_dispatch:
+
+jobs:
+build:
+runs-on: ubuntu-latest
+
+steps:
+  - name: Checkout source
+    uses: actions/checkout@v4
+
+  - name: Set up JDK
+    uses: actions/setup-java@v4
+    with:
+      distribution: temurin
+      java-version: '17'
+
+  - name: Set up Android SDK
+    uses: android-actions/setup-android@v3
+
+  - name: Install Android packages
+    run: |
+      sdkmanager "platforms;android-36" "build-tools;36.0.0" "ndk;27.2.12479018"
+
+  - name: Build debug APK
+    run: |
+      chmod +x gradlew
+      ./gradlew assembleAfatDebug
+
+  - name: Upload APK
+    uses: actions/upload-artifact@v4
+    with:
+      name: MrakGram-APK
+      path: TMessagesProj/build/outputs/apk/
+      if-no-files-found: error
